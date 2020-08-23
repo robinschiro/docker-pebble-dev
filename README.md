@@ -64,7 +64,8 @@ docker run -it --rm \
 
 If the XServer on the host system only allow valid user (e.g. Arch Linux), 
 you have to add ```-v ~/.Xauthority:/home/pebble/.Xauthority --net=host```:
-```sh
+```sh    
+sudo chmod -R 777 .
 docker run -it --rm \
     --net=host \
     -e DISPLAY=$DISPLAY \
@@ -73,3 +74,28 @@ docker run -it --rm \
     -v ~/.Xauthority:/home/pebble/.Xauthority \
     bboehmke/pebble-dev
 ```
+
+## Troubleshooting
+
+If you see something like the following error when running 'pebble build' or 'pebble new-project', then you need to update the permissions on the folder that you are running the command against. 
+
+```
+Traceback (most recent call last):
+  File "/opt/pebble-sdk-4.5-linux64/pebble-tool/pebble.py", line 7, in <module>
+    pebble_tool.run_tool()
+  File "/opt/pebble-sdk-4.5-linux64/pebble-tool/pebble_tool/__init__.py", line 44, in run_tool
+    args.func(args)
+  File "/opt/pebble-sdk-4.5-linux64/pebble-tool/pebble_tool/commands/base.py", line 47, in <lambda>
+    parser.set_defaults(func=lambda x: cls()(x))
+  File "/opt/pebble-sdk-4.5-linux64/pebble-tool/pebble_tool/commands/sdk/create.py", line 163, in __call__
+    _copy_from_template(template_layout, extant_path(template_paths), args.name, options)
+  File "/opt/pebble-sdk-4.5-linux64/pebble-tool/pebble_tool/commands/sdk/create.py", line 68, in _copy_from_template
+    os.mkdir(project_path)
+OSError: [Errno 13] Permission denied: 'test'
+```
+
+For example, if the folder you are using is '~/pebble-dev', then run the following to enable docker to write to this folder:
+```
+sudo chmod -R 777 ~/pebble-dev
+```
+    
